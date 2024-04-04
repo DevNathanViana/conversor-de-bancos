@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "mongodb": "^6.5.0",
+    "node-firebird": "^1.1.8"
+  }
+}
