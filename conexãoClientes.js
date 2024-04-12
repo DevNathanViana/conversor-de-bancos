@@ -1,5 +1,5 @@
 const firebird = require('node-firebird');
-const MongoClient = require('mongodb').MongoClient;
+const { MongoClient } = require('mongodb');
 
 const optionsFirebird = {
     host: 'localhost',
@@ -20,7 +20,19 @@ async function fetchDataFromFirebird() {
             if (err) {
                 reject(err);
             } else {
-                db.query('SELECT DISTINCT c.*, ct.cdcontrato, s.numsetor, s.local FROM CLIENTE c LEFT JOIN CONTRATO ct ON c.cdcliente = ct.cdcliente LEFT JOIN SETOR s ON ct.cdcontrato = s.cdcontrato', function (err, result) {
+                db.query(`
+                    SELECT DISTINCT 
+                        c.*, 
+                        ct.cdcontrato, 
+                        s.numsetor, 
+                        s.local, 
+                        cc.cdcodificador 
+                    FROM 
+                        CLIENTE c 
+                        LEFT JOIN CONTRATO ct ON c.cdcliente = ct.cdcliente 
+                        LEFT JOIN SETOR s ON ct.cdcontrato = s.cdcontrato 
+                        LEFT JOIN CONTRATO cc ON ct.cdcontrato = cc.cdcontrato
+                `, function (err, result) {
                     if (err) {
                         reject(err);
                     } else {
@@ -34,7 +46,7 @@ async function fetchDataFromFirebird() {
 }
 
 async function modifyData(data) {
-    return data.map(item => {
+    return Promise.all(data.map(async (item) => {
         const contatos = [];
         for (let i = 1; i <= 6; i++) {
             if (item[`FONE${i}`]) {
@@ -85,7 +97,8 @@ async function modifyData(data) {
             cep: item.CEP,
             observacao: item.OBSERVACAO,
             contatos: contatos,
-            cdcontrato: item.CDCONTRATO, // Incluindo o cdcontrato
+            cdcontrato: item.CDCONTRATO,
+            codificador: item.CDCODIFICADOR, // Incluindo o cdcodificador diretamente
             setores: [{
                 setor: item.NUMSETOR || "",
                 localizacao: item.LOCAL || "",
@@ -98,7 +111,7 @@ async function modifyData(data) {
                 procedimento: ""
             }]
         };
-    });
+    }));
 }
 
 
@@ -120,8 +133,6 @@ async function main() {
         console.error('Erro durante o processo:', err);
     }
 }
-
-
 
 async function saveDataToMongoDB(data) {
     const client = new MongoClient('mongodb://localhost:27017/azsimdb', optionsMongoDB);

@@ -37,7 +37,7 @@ async function modifyData(data) {
     return data.map(item => {
 
         return {
-            cdstatus: item.CDSTATUS,
+            sts: item.CDSTATUS,
             estatus: item.ESTATUS,
             referencia1: item.REFERENCIA1,
             referencia2: item.REFERENCIA2,
@@ -78,7 +78,7 @@ async function saveDataToMongoDB(data) {
     try {
         await client.connect();
         const db = client.db();
-        const collection = db.collection('status');
+        const collection = db.collection('config_evento');
 
         await collection.insertMany(data);
         console.log('Dados salvos no MongoDB com sucesso!');
