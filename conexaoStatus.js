@@ -37,8 +37,7 @@ async function modifyData(data) {
     return data.map(item => {
 
         return {
-            sts: item.CDSTATUS,
-            estatus: item.ESTATUS,
+            sts: item.ESTATUS,
             referencia1: item.REFERENCIA1,
             referencia2: item.REFERENCIA2,
             setor: item.SETOR,
