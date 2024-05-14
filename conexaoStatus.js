@@ -58,7 +58,7 @@ async function modifyData(data) {
 async function main() {
     try {
         const clienteData = await fetchDataFromFirebird();
-
+        l
         // Modificar os dados antes de salvar no MongoDB
         const modifiedData = await modifyData(clienteData);
 
@@ -72,7 +72,7 @@ async function main() {
 
 
 async function saveDataToMongoDB(data) {
-    const client = new MongoClient('mongodb://localhost:27017/status', optionsMongoDB);
+    const client = new MongoClient('mongodb://fukhpt_azsimdb:*TVgcp!Og&wzeAox@mongodb-ag-br1-2.conteige.cloud:27017/fukhpt_azsimdb?authMechanism=DEFAULT&tls=false&authSource=fukhpt_azsimdb', optionsMongoDB);
 
     try {
         await client.connect();

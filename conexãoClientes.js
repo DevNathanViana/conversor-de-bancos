@@ -135,7 +135,7 @@ async function main() {
 }
 
 async function saveDataToMongoDB(data) {
-    const client = new MongoClient('mongodb://localhost:27017/azsimdb', optionsMongoDB);
+    const client = new MongoClient('mongodb://fukhpt_azsimdb:*TVgcp!Og&wzeAox@mongodb-ag-br1-2.conteige.cloud:27017/fukhpt_azsimdb?authMechanism=DEFAULT&tls=false&authSource=fukhpt_azsimdb', optionsMongoDB);
 
     try {
         await client.connect();
