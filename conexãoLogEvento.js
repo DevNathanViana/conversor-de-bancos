@@ -15,7 +15,7 @@ async function fetchDataFromFirebird() {
             if (err) {
                 reject(err);
             } else {
-                db.query(`SELECT FIRST 10 le.CTX, le.TIPOCTX, le.PORTACOM, le.NREVENTO, le.STATUS, le.REFERENCIA, le.IDENTIFICACAO, le.DATAEVENTO, le.CDCLIENTE, co.CDCODIFICADOR
+                db.query(`SELECT FIRST 10000 le.CTX, le.TIPOCTX, le.PORTACOM, le.NREVENTO, le.STATUS, le.REFERENCIA, le.IDENTIFICACAO, le.DATAEVENTO, le.CDCLIENTE, co.CDCODIFICADOR
                 FROM LOGEVENTO le
                 INNER JOIN CONTRATO co ON le.CDCLIENTE = co.CDCLIENTE
                 ORDER BY RAND()`, function (err, result) {
@@ -52,16 +52,16 @@ async function sendDataToEndpoint(data) {
                 codificador: item.CDCODIFICADOR
             });
             console.log('Dados enviados para o endpoint com sucesso:', item);
-            await sleep(2000);
+            // await sleep(2000);
         }
     } catch (error) {
         console.error('Erro ao enviar dados para o endpoint:', error);
     }
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+// function sleep(ms) {
+//     return new Promise(resolve => setTimeout(resolve, ms));
+// }
 
 async function main() {
     try {
