@@ -131,8 +131,21 @@ async function modifyData(data) {
     }));
 }
 
+async function main() {
+    try {
+        const clienteData = await fetchDataFromFirebird();
+        const modifiedData = await modifyData(clienteData);
+        const uniqueClients = modifiedData.filter((item, index, self) =>
+            index === self.findIndex((t) => t.nome === item.nome)
+        );
+        await saveDataToMongoDB(uniqueClients);
+    } catch (err) {
+        console.error('Erro durante o processo:', err);
+    }
+}
+
 async function saveDataToMongoDB(data) {
-    const client = new MongoClient('mongodb://fukhpt_azsimdb:*TVgcp!Og&wzeAox@mongodb-ag-br1-2.conteige.cloud:27017/fukhpt_azsimdb?authMechanism=DEFAULT&tls=false&authSource=fukhpt_azsimdb', optionsMongoDB);
+    const client = new MongoClient('mongodb://localhost:27017/azsimdb', optionsMongoDB);
 
     try {
         await client.connect();
@@ -145,19 +158,6 @@ async function saveDataToMongoDB(data) {
         console.error('Erro ao salvar dados no MongoDB:', err);
     } finally {
         await client.close();
-    }
-}
-
-async function main() {
-    try {
-        const clienteData = await fetchDataFromFirebird();
-        const modifiedData = await modifyData(clienteData);
-        const uniqueClients = modifiedData.filter((item, index, self) =>
-            index === self.findIndex((t) => t.nome === item.nome)
-        );
-        await saveDataToMongoDB(uniqueClients);
-    } catch (err) {
-        console.error('Erro durante o processo:', err);
     }
 }
 
