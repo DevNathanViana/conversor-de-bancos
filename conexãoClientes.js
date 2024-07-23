@@ -55,11 +55,18 @@ function groupDataByCdContrato(data) {
                 setores: []
             };
         }
-        groupedData[item.CDCONTRATO].setores.push({
-            setor: item.NUMSETOR || "",
-            localizacao: item.LOCAL || "",
-            observacao: ""
-        });
+
+        const setor = item.NUMSETOR ? { setor: item.NUMSETOR } : null;
+        const localizacao = item.LOCAL ? { localizacao: item.LOCAL } : null;
+        const observacao = item.OBSERVACAO ? { observacao: item.OBSERVACAO } : null;
+
+        if (setor || localizacao || observacao) {
+            groupedData[item.CDCONTRATO].setores.push({
+                ...setor,
+                ...localizacao,
+                ...observacao
+            });
+        }
     });
 
     return Object.values(groupedData);
@@ -72,24 +79,15 @@ async function modifyData(data) {
         const contatos = [];
         for (let i = 1; i <= 6; i++) {
             if (item[`FONE${i}`]) {
+                const nome = item[`FONEOBS${i}`] ? { nome: item[`FONEOBS${i}`] } : null;
                 contatos.push({
-                    nome: item[`FONEOBS${i}`] || "",
-                    telefone: item[`FONE${i}`] || "",
+                    telefone: item[`FONE${i}`],
+                    ...nome,
                     senha: "",
                     contraSenha: "",
                     observacao: ""
                 });
             }
-        }
-
-        if (contatos.length === 0) {
-            contatos.push({
-                nome: "",
-                telefone: "",
-                senha: "",
-                contraSenha: "",
-                observacao: ""
-            });
         }
 
         let natureza;
@@ -117,22 +115,23 @@ async function modifyData(data) {
             uf: item.UF,
             cep: item.CEP,
             observacao: item.OBSERVACAO,
-            contatos: contatos,
+            contatos: contatos.length > 0 ? contatos : [],
             cdcontrato: item.CDCONTRATO,
             codificador: item.CDCODIFICADOR,
-            setores: item.setores,
-            viagens: [{
-                nomeContatoNotificacaoSaida: "",
-                nomeContatoNotificacaoVolta: "",
-                observacao: "",
-                procedimento: ""
-            }]
+            setores: item.setores.map(setor => {
+                const novoSetor = {};
+                if (setor.setor) novoSetor.setor = setor.setor;
+                if (setor.localizacao) novoSetor.localizacao = setor.localizacao;
+                if (setor.observacao) novoSetor.observacao = setor.observacao;
+                return novoSetor;
+            }),
+            viagens: []
         };
     }));
 }
 
 async function saveDataToMongoDB(data) {
-    const client = new MongoClient('mongodb://fukhpt_azsimdb:*TVgcp!Og&wzeAox@mongodb-ag-br1-2.conteige.cloud:27017/fukhpt_azsimdb?authMechanism=DEFAULT&tls=false&authSource=fukhpt_azsimdb', optionsMongoDB);
+    const client = new MongoClient('mongodb://dhxqhp_azsimdb:D4qQwl2IAv@mongodb-ag-br1-2.conteige.cloud:27017/dhxqhp_azsimdb?authMechanism=DEFAULT&tls=false&authSource=dhxqhp_azsimdb', optionsMongoDB);
 
     try {
         await client.connect();
